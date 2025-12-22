@@ -38,7 +38,6 @@ const roomUsers = {};
 const roomCode = {}; 
 
 io.on("connection", (socket) => {
-  console.log("Socket connected:", socket.id);
 
   socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
     const rid = String(roomId || "").trim();
@@ -55,9 +54,6 @@ io.on("connection", (socket) => {
     roomUsers[rid].push({ socketId: socket.id, username: uname });
 
     socket.join(rid);
-
-    console.log(`User joined: ${uname} in room ${rid}`);
-    console.log(`Users in room ${rid}:`, roomUsers[rid]);
 
     const users = roomUsers[rid].reduce((acc, u) => {
       if (!acc.some((x) => x.socketId === u.socketId)) acc.push(u);
@@ -90,7 +86,6 @@ io.on("connection", (socket) => {
     if (user) {
       const { roomId, username } = user;
       removeUserFromRoom(socket.id, roomId);
-      console.log(`User disconnected: ${username} from room ${roomId}`);
     }
   });
 });
@@ -109,7 +104,6 @@ function removeUserFromRoom(socketId, roomId) {
     if (roomUsers[roomId].length === 0) {
       delete roomUsers[roomId];
       delete roomCode[roomId];
-      console.log(`Room ${roomId} is now empty`);
     }
   }
 

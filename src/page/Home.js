@@ -24,10 +24,7 @@ const Home = () => {
         username: normalizedUsername,
       },
     });
-    console.log({
-      roomId: normalizedRoomId,
-      username: normalizedUsername,
-    });
+
   };
   const keyHandler = (e) => {
     if (e.code === "Enter") {
@@ -39,7 +36,6 @@ const Home = () => {
     const newRoomId = uuidv4();
     setRoomId(newRoomId);
     toast.success("Created a new room");
-    console.log("New Room ID:", newRoomId);
   };
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center px-4">

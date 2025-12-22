@@ -10,7 +10,6 @@ const Sidebar = ({
   handleCopyRoomId,
   handleLeaveRoom,
 }) => {
-    console.log("Clin.........",clients);
   return (
     <>
       <aside
