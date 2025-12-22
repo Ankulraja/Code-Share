@@ -362,15 +362,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🙏 Acknowledgments
-
-- [Socket.io](https://socket.io/) - Real-time communication
-- [CodeMirror](https://codemirror.net/) - Code editor component
-- [Railway](https://railway.app/) - Backend hosting
-- [Vercel](https://vercel.com/) - Frontend hosting
-
----
-
 ## 📸 Screenshots
 
 ### Home Page
