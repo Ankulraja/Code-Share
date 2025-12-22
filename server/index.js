@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 const { Server } = require("socket.io");
 const http = require("http");
 const ACTIONS = require("./socketAction");
@@ -9,19 +10,21 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:3000",
+      "http://localhost:4000",
       "https://code-share-neon-chi.vercel.app",
       "https://code-share-production-cb5a.up.railway.app"
     ],
     methods: ["GET", "POST"],
-    credentials: true
+    credentials: true,
+    allowEIO3: true
   },
   // Add these Railway-specific options
   transports: ['websocket', 'polling'],
-  allowEIO3: true,
   pingTimeout: 60000,
   pingInterval: 25000
 });
 
+app.use(express.static(path.join(__dirname, '../public')));
 // Add health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
@@ -111,6 +114,6 @@ function removeUserFromRoom(socketId, roomId) {
 }
 
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-  console.log("Server Running on Port:", PORT);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server Running on Port: ${PORT}`);
 });
