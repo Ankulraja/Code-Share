@@ -9,8 +9,21 @@ import { useClients } from "../hooks/useClients";
 import { useRoomActions } from "../hooks/useRoomActions";
 import { useResetConfirmation } from "../hooks/useResetConfirmation";
 import { getAvatarColor, getInitials } from "../utils/avatarUtils";
+import { useEffect, useRef } from "react";
+import initSocket from "../socket";
+import ACTIONS from "../utils/socketAction";
 
 const Editor = () => {
+  const soketRef = useRef(null);
+  useEffect(() => {
+    const init = async () => {
+      soketRef.current = await initSocket();
+      if (soketRef.current) {
+        soketRef.current.emit(ACTIONS.JOIN, { roomId, username });
+      }
+    };
+    init();
+  }, []);
   const location = useLocation();
   const { roomId } = useParams();
 

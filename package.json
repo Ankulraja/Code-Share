@@ -18,6 +18,7 @@
     "@uiw/codemirror-theme-tokyo-night": "^4.25.4",
     "@uiw/codemirror-theme-vscode": "^4.25.4",
     "@uiw/react-codemirror": "^4.25.4",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
@@ -31,6 +32,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "dev:server": "nodemon server/index.js",
+    "dev:client": "react-scripts start",
+    "dev": "concurrently \"npm:dev:server\" \"npm:dev:client\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -54,6 +58,8 @@
     ]
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.11",
     "tailwindcss": "^3.4.19"
   }
 }
