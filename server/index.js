@@ -5,13 +5,16 @@ const http = require("http");
 const ACTIONS = require("./socketAction");
 const server = http.createServer(app);
 
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
 const io = new Server(server, {
   cors: {
-    origin: CLIENT_ORIGIN,
+    origin: [
+      "http://localhost:3000",
+      "https://code-share-neon-chi.vercel.app",
+      "https://code-share-production-cb5a.up.railway.app"
+    ],
     methods: ["GET", "POST"],
-    credentials: true,
-  },
+    credentials: true
+  }
 });
 
 const userSocketMap = {};
@@ -100,5 +103,4 @@ function removeUserFromRoom(socketId, roomId) {
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log("Server Running on Port:", PORT);
-  console.log("Allowed client origin:", CLIENT_ORIGIN);
 });
