@@ -1,4 +1,5 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import CodeEditor from "../components/CodeEditor";
 import Sidebar from "../components/Sidebar";
 import EditorToolbar from "../components/EditorToolbar";
@@ -9,26 +10,25 @@ import { useClients } from "../hooks/useClients";
 import { useRoomActions } from "../hooks/useRoomActions";
 import { useResetConfirmation } from "../hooks/useResetConfirmation";
 import { getAvatarColor, getInitials } from "../utils/avatarUtils";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import initSocket from "../socket";
 import ACTIONS from "../utils/socketAction";
 
 const Editor = () => {
   const soketRef = useRef(null);
-  useEffect(() => {
-    const init = async () => {
-      soketRef.current = await initSocket();
-      if (soketRef.current) {
-        soketRef.current.emit(ACTIONS.JOIN, { roomId, username });
-      }
-    };
-    init();
-  }, []);
+  const [socket, setSocket] = useState(null);
+  const navigate = useNavigate();
   const location = useLocation();
   const { roomId } = useParams();
-
   const username = location.state?.username;
-  const { clients } = useClients(username);
+
+  useEffect(() => {
+    if (!username) {
+      toast.error("Username is required");
+      navigate("/");
+    }
+  }, [username, navigate]);
+  const { clients } = useClients(username, socket);
   const { sidebarWidth, isDragging, startDrag } = useSidebarResize();
   const { handleCopyRoomId, handleLeaveRoom } = useRoomActions(roomId);
   const {
@@ -42,7 +42,59 @@ const Editor = () => {
     handleCodeChange,
     resetCode,
   } = useEditorState();
+  useEffect(() => {
+    const init = async () => {
+      try {
+        soketRef.current = await initSocket();
+        if (soketRef.current) {
+          soketRef.current.on("connect_error", (err) => {
+            console.error("Socket connection error:", err);
+            toast.error("Failed to connect to server");
+            navigate("/");
+          });
 
+          soketRef.current.on("connect_failed", (err) => {
+            console.error("Socket connection failed:", err);
+            toast.error("Connection failed");
+            navigate("/");
+          });
+
+          soketRef.current.emit(ACTIONS.JOIN, {
+            roomId: roomId.trim(),
+            username: username.trim(),
+          });
+          setSocket(soketRef.current);
+          soketRef.current.on(ACTIONS.SYNC_CODE, ({ code: synced }) => {
+            if (typeof synced === "string") {
+              handleCodeChange(synced);
+            }
+          });
+          soketRef.current.on(ACTIONS.CODE_CHANGE, ({ code: updated }) => {
+            if (typeof updated === "string") {
+              handleCodeChange(updated);
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Socket initialization error:", error);
+        toast.error("Failed to initialize connection");
+        navigate("/");
+      }
+    };
+
+    init();
+
+    return () => {
+      if (soketRef.current) {
+        soketRef.current.disconnect();
+        soketRef.current.off("connect_error");
+        soketRef.current.off("connect_failed");
+        soketRef.current.off(ACTIONS.SYNC_CODE);
+        soketRef.current.off(ACTIONS.CODE_CHANGE);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const { showResetConfirm, requestReset, confirmReset, cancelReset } =
     useResetConfirmation(resetCode);
 
@@ -72,7 +124,19 @@ const Editor = () => {
         <div className="flex-1">
           <CodeEditor
             value={code}
-            onCodeChange={handleCodeChange}
+            onCodeChange={(newCode) => {
+              handleCodeChange(newCode);
+              if (soketRef.current) {
+                try {
+                  soketRef.current.emit(ACTIONS.CODE_CHANGE, {
+                    roomId: roomId.trim(),
+                    code: newCode,
+                  });
+                } catch (e) {
+                  // ignore emit errors
+                }
+              }
+            }}
             theme={theme}
             fontSize={fontSize}
             language={language}

@@ -9,22 +9,24 @@ const Home = () => {
   const [username, setUsername] = useState("");
   const navigator = useNavigate();
   const handleJoin = () => {
-    if (!roomId.trim()) {
+    const normalizedRoomId = roomId.trim();
+    const normalizedUsername = username.trim();
+    if (!normalizedRoomId) {
       toast.error("Please enter a Room ID");
       return;
     }
-    if (!username.trim()) {
+    if (!normalizedUsername) {
       toast.error("Please enter a Username");
       return;
     }
-    navigator(`editor/${roomId}`, {
+    navigator(`editor/${normalizedRoomId}`, {
       state: {
-        username,
+        username: normalizedUsername,
       },
     });
     console.log({
-      roomId,
-      username,
+      roomId: normalizedRoomId,
+      username: normalizedUsername,
     });
   };
   const keyHandler = (e) => {
