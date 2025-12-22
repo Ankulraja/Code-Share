@@ -14,13 +14,10 @@ const Editor = () => {
   const location = useLocation();
   const { roomId } = useParams();
 
-  // Custom hooks for state management
   const username = location.state?.username;
   const { clients } = useClients(username);
   const { sidebarWidth, isDragging, startDrag } = useSidebarResize();
   const { handleCopyRoomId, handleLeaveRoom } = useRoomActions(roomId);
-
-  // Editor state management
   const {
     code,
     theme,
@@ -33,7 +30,6 @@ const Editor = () => {
     resetCode,
   } = useEditorState();
 
-  // Reset confirmation
   const { showResetConfirm, requestReset, confirmReset, cancelReset } =
     useResetConfirmation(resetCode);
 

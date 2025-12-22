@@ -40,8 +40,19 @@ const EditorToolbar = ({
           onChange={(e) => onThemeChange(e.target.value)}
           className="rounded-md border border-slate-600 bg-slate-900 px-2 py-1 text-xs text-slate-100"
         >
-          <option value="dracula">Dracula</option>
-          <option value="light">Light</option>
+          <optgroup label="Dark Themes">
+            <option value="dracula">Dracula</option>
+            <option value="monokai">Monokai</option>
+            <option value="githubDark">GitHub Dark</option>
+            <option value="solarizedDark">Solarized Dark</option>
+            <option value="vscodeDark">VS Code Dark</option>
+            <option value="tokyoNight">Tokyo Night</option>
+          </optgroup>
+          <optgroup label="Light Themes">
+            <option value="githubLight">GitHub Light</option>
+            <option value="solarizedLight">Solarized Light</option>
+            <option value="vscodeLight">VS Code Light</option>
+          </optgroup>
         </select>
       </div>
 

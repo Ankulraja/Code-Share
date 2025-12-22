@@ -4,6 +4,11 @@ import { cpp } from "@codemirror/lang-cpp";
 import { java } from "@codemirror/lang-java";
 import { python } from "@codemirror/lang-python";
 import { dracula } from "@uiw/codemirror-theme-dracula";
+import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
+import { monokai } from "@uiw/codemirror-theme-monokai";
+import { solarizedLight, solarizedDark } from "@uiw/codemirror-theme-solarized";
+import { vscodeDark, vscodeLight } from "@uiw/codemirror-theme-vscode";
+import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night";
 
 const languageMap = {
   javascript: javascript({ jsx: true }),
@@ -15,7 +20,14 @@ const languageMap = {
 
 const themeMap = {
   dracula,
-  light: undefined,
+  monokai,
+  githubDark,
+  solarizedDark,
+  vscodeDark,
+  tokyoNight,
+  githubLight,
+  solarizedLight,
+  vscodeLight,
 };
 
 const CodeEditor = ({
@@ -34,7 +46,7 @@ const CodeEditor = ({
     <div className="h-full" style={{ fontSize }}>
       <CodeMirror
         value={value}
-        height="100%"
+        height= "100vh"
         theme={cmTheme}
         extensions={extensions}
         onChange={(val) => onCodeChange && onCodeChange(val)}
