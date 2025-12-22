@@ -18,14 +18,17 @@ const io = new Server(server, {
     credentials: true,
     allowEIO3: true
   },
-  // Add these Railway-specific options
   transports: ['websocket', 'polling'],
   pingTimeout: 60000,
   pingInterval: 25000
 });
 
+app.use(express.static("build"));
+app.use((req,res,next)=>{
+  res.sendFile(path.join(__dirname,'build','index.html'))
+})
+
 app.use(express.static(path.join(__dirname, '../public')));
-// Add health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
