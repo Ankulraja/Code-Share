@@ -12,33 +12,32 @@ const io = new Server(server, {
       "http://localhost:3000",
       "http://localhost:4000",
       "https://code-share-neon-chi.vercel.app",
-      "https://code-share-production-cb5a.up.railway.app"
+      "https://code-share-production-cb5a.up.railway.app",
     ],
     methods: ["GET", "POST"],
     credentials: true,
-    allowEIO3: true
+    allowEIO3: true,
   },
-  transports: ['websocket', 'polling'],
+  transports: ["websocket", "polling"],
   pingTimeout: 60000,
-  pingInterval: 25000
+  pingInterval: 25000,
 });
 
 app.use(express.static("build"));
-app.use((req,res,next)=>{
-  res.sendFile(path.join(__dirname,'build','index.html'))
-})
+app.use((req, res, next) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
-app.use(express.static(path.join(__dirname, '../public')));
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
+app.use(express.static(path.join(__dirname, "../public")));
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
 });
 
 const userSocketMap = {};
-const roomUsers = {}; 
-const roomCode = {}; 
+const roomUsers = {};
+const roomCode = {};
 
 io.on("connection", (socket) => {
-
   socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
     const rid = String(roomId || "").trim();
     const uname = String(username || "").trim();
@@ -77,6 +76,14 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit(ACTIONS.CODE_CHANGE, { code });
   });
 
+  socket.on(ACTIONS.CODE_RESET, ({ roomId }) => {
+    const rid = String(roomId || "").trim();
+    if (rid) {
+      roomCode[rid] = "// Start coding here...\n";
+      socket.to(rid).emit(ACTIONS.CODE_RESET);
+    }
+  });
+
   socket.on(ACTIONS.LEAVE, ({ roomId }) => {
     removeUserFromRoom(socket.id, roomId);
   });
@@ -111,6 +118,6 @@ function removeUserFromRoom(socketId, roomId) {
 }
 
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server Running on Port: ${PORT}`);
 });

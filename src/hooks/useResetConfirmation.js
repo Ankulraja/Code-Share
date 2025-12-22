@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-export const useResetConfirmation = (onReset) => {
+export const useResetConfirmation = (onReset, socket, roomId) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const requestReset = () => setShowResetConfirm(true);
 
   const confirmReset = () => {
-    onReset();
+    onReset(socket, roomId);
     setShowResetConfirm(false);
   };
 

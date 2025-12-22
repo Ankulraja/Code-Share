@@ -74,6 +74,10 @@ const Editor = () => {
               handleCodeChange(updated);
             }
           });
+          soketRef.current.on(ACTIONS.CODE_RESET, () => {
+            resetCode();
+            toast.success("Code has been reset");
+          });
         }
       } catch (error) {
         console.error("Socket initialization error:", error);
@@ -91,12 +95,13 @@ const Editor = () => {
         soketRef.current.off("connect_failed");
         soketRef.current.off(ACTIONS.SYNC_CODE);
         soketRef.current.off(ACTIONS.CODE_CHANGE);
+        soketRef.current.off(ACTIONS.CODE_RESET);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { showResetConfirm, requestReset, confirmReset, cancelReset } =
-    useResetConfirmation(resetCode);
+    useResetConfirmation(resetCode, socket, roomId);
 
   return (
     <div className="flex h-screen bg-slate-900 text-slate-100 select-none">
