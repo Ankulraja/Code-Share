@@ -15,38 +15,31 @@ const io = new Server(server, {
 });
 
 const userSocketMap = {};
-const roomUsers = {}; // { roomId: [{ socketId, username }, ...] }
-const roomCode = {}; // { roomId: codeString }
+const roomUsers = {}; 
+const roomCode = {}; 
 
 io.on("connection", (socket) => {
   console.log("Socket connected:", socket.id);
 
-  // Handle user joining a room
   socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
     const rid = String(roomId || "").trim();
     const uname = String(username || "").trim();
     if (!rid || !uname) {
       return;
     }
-    // Store user info
     userSocketMap[socket.id] = { username: uname, roomId: rid };
 
-    // Add user to room
     if (!roomUsers[rid]) {
       roomUsers[rid] = [];
     }
-    // Keep only one active connection per username in a room; replace older
     roomUsers[rid] = roomUsers[rid].filter((u) => u.username !== uname);
     roomUsers[rid].push({ socketId: socket.id, username: uname });
 
-    // Join socket to a room namespace
     socket.join(rid);
 
     console.log(`User joined: ${uname} in room ${rid}`);
     console.log(`Users in room ${rid}:`, roomUsers[rid]);
 
-    // Notify ALL users in the room (including the new joiner) that someone joined
-    // Broadcast deduped list (by socketId)
     const users = roomUsers[rid].reduce((acc, u) => {
       if (!acc.some((x) => x.socketId === u.socketId)) acc.push(u);
       return acc;
