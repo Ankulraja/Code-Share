@@ -9,14 +9,15 @@ const Sidebar = ({
   getInitials,
   handleCopyRoomId,
   handleLeaveRoom,
+  onCloseSidebar,
 }) => {
   return (
     <>
       <aside
-        className="flex flex-col border-r border-slate-700 bg-slate-800"
+        className="flex flex-col border-r border-slate-700 bg-slate-800 h-full w-60 md:w-auto"
         style={{ width: sidebarWidth }}
       >
-        <div className="border-b border-slate-700 p-4">
+        <div className="border-b border-slate-700 p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-emerald-400/60 bg-white">
               <img
@@ -30,6 +31,30 @@ const Sidebar = ({
               <p className="text-xs text-emerald-400">Realtime collaboration</p>
             </div>
           </div>
+          {onCloseSidebar && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onCloseSidebar();
+              }}
+              className="md:hidden p-2 rounded-lg hover:bg-slate-700 transition flex-shrink-0"
+              aria-label="Close sidebar"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto p-4">
@@ -62,7 +87,10 @@ const Sidebar = ({
             Copy ROOM ID
           </button>
           <button
-            onClick={handleLeaveRoom}
+            onClick={() => {
+              handleLeaveRoom();
+              onCloseSidebar?.();
+            }}
             className="w-full rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-bold text-slate-900 transition hover:bg-emerald-400"
           >
             Leave
@@ -71,7 +99,7 @@ const Sidebar = ({
       </aside>
 
       <div
-        className={`w-1 cursor-col-resize bg-slate-700/50 transition-colors duration-150 hover:bg-emerald-400/70 ${
+        className={`w-1 cursor-col-resize bg-slate-700/50 transition-colors duration-150 hover:bg-emerald-400/70 hidden md:block ${
           isDragging ? "bg-emerald-400/90" : ""
         }`}
         onMouseDown={onStartDrag}
