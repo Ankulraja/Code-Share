@@ -23,14 +23,15 @@ const io = new Server(server, {
   pingInterval: 25000,
 });
 
-app.use(express.static("build"));
-app.use((req, res, next) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
-
+const buildPath = path.join(__dirname, "../build");
+app.use(express.static(buildPath));
 app.use(express.static(path.join(__dirname, "../public")));
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
+});
+
+app.use((req, res) => {
+  res.sendFile(path.join(buildPath, "index.html"));
 });
 
 const userSocketMap = {};
